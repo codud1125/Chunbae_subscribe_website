@@ -1,0 +1,206 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  background: #FFE3E1;
+  min-height: 30vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-content{
+    padding-top: 30px;
+    margin-left:auto;
+    margin-right:10px
+}
+
+.header-content h2 {
+  color: #FF9494;
+  font-size: 5em;
+  position: static;
+  padding-left: 30px;
+}
+
+.header-content h3 {
+    color: #FF9494;
+    font-size: 2.5em;
+    position: static;
+    padding-left: 30px;
+  }
+  
+  
+  .button-cover:before {
+    counter-increment: button-counter;
+    content: counter(button-counter);
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #d7e3e3;
+    font-size: 12px;
+    line-height: 1;
+    padding: 5px;
+  }
+  
+  .button-cover,
+  .knobs,
+  .layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .button {
+    position: relative;
+    top: 50%;
+    width: 74px;
+    height: 36px;
+    margin: -20px auto 0 auto;
+    overflow: hidden;
+  }
+  
+  .button.r,
+  .button.r .layer {
+    border-radius: 100px;
+  }
+  
+  .button.b2 {
+    border-radius: 2px;
+  }
+  
+  .checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+  }
+  
+  .knobs {
+    z-index: 2;
+  }
+  
+  .layer {
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+  }
+  
+  /* Button 1 */
+  #button-1 .knobs:before {
+    content: "Eng";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 10px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    padding: 9px 4px;
+    background-color: #FF9494;
+    border-radius: 50%;
+    transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+
+  }
+  
+  #button-1 .checkbox:checked + .knobs:before {
+    content: "Kor";
+    left: 42px;
+    background-color: #FF9494;
+  }
+  
+  #button-1 .checkbox:checked ~ .layer {
+    background-color: #fcebeb;
+  }
+  
+  #button-1 .knobs,
+  #button-1 .knobs:before,
+  #button-1 .layer {
+    transition: 0.3s ease all;
+  }
+
+  #button-1 {
+    padding-right: 20px;
+    float: right;
+}
+
+.middle-container{
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding-top:10px;
+}
+
+.signup-form {
+  background: #FFF5E4;
+  padding: 100px 200px;
+  border: 2px solid #FF9494;
+  box-shadow: 15px 15px 1px #FFD1D1, 15px 15px 1px 2px #FF9494;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  font-size: 1.5rem;
+  line-height: 3rem * 2;
+  font-family: 3rem;
+  margin-bottom: 3rem * 2;
+  border: none;
+  border-bottom: 5px solid white;
+  background: white;
+  min-width: 250px;
+  padding-left: 5px;
+  outline: none;
+  color: black;
+}
+
+.input:focus{
+  border-bottom: 5px solid #FFD1D1;
+}
+
+.button_signup{
+  display: block;
+  margin: 0 auto;
+  line-height: 3rem * 2;
+  padding: 0 20px;
+  background: #FFD1D1;
+  letter-spacing: 2px;
+  transition: .2s all ease-in-out;
+  outline: none;
+  border: 1px solid rgba(0,0,0,1);
+  box-shadow: 3px 3px 1px 1px #FFD1D1, 3px 3px 1px 2px rgba(0,0,0,1);
+}
+.button_signup:hover{
+    background: rgba(0,0,0,1);
+    color: white;
+    border: 1px solid rgba(0,0,0,1);
+  }
+
+::selection{
+  background: #FFD1D1
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus{
+  border-bottom: 5px solid #FFD1D1;
+  -webkit-text-fill-color: black;
+  transition: background-color 5000s ease-in-out 0s;
+}
