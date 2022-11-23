@@ -31,7 +31,7 @@ with open('positive_affirmations.csv') as csv_file:
 quote_of_the_day = random.choice(data)
 
 # WEATHER_ENDPOINT = 'https://api.openweathermap.org/data/2.5/weather?zip={zip code},{country code}&appid={API key}'
-weather_api_key = '207d9921d71382b6ff73e882a720afc7'
+weather_api_key = 'secret'
 
 # Fetching emails
 with MailBox("imap.gmail.com", 993).login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial_folder="INBOX") as mailbox:
