@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CB Affirmation</title>
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="static/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" href="favicon.ico">
@@ -30,12 +30,12 @@
 
         <div class="middle-container">
             <div class="signup-form">
-                <form>
-                    <input class="input" placeholder="Name" type="text" required=""><br>
-                    <input class="input" placeholder="Email" type="email" required=""><br>
-                    <input class="input" placeholder="Zip Code" type="text" required=""><br>
-                    <button class="button_signup" type="button_signup">SIGN UP</button>
-
+                <form action="https://formspree.io/f/mvoyyelq" method='POST'>
+                    <input type="hidden" name="_subject" value="Contact Request from personal website"><br>
+                    <input class="input" placeholder="Name" type="text" name="name" required=""><br>
+                    <input class="input" placeholder="Email" type="email" name="email" required=""><br>
+                    <input class="input" placeholder="Zip Code" type="text" name="zipcode" required=""><br>
+                    <button class="button_signup" type="submit">SIGN UP</button>
                 </form>
 
             </div>
