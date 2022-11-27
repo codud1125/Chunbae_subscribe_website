@@ -7,13 +7,16 @@ import random
 import csv
 from datetime import datetime, timedelta
 import requests
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 today = datetime.now()
 yesterday = today - timedelta(days=1)
 
-today = today.strftime('%d-%b-%Y')
-yesterday = yesterday.strftime('%d-%b-%Y')
+# today = today.strftime('%Y-%b-%d')
+yesterday_news = yesterday.strftime('%Y-%b-%d')
+yesterday_email = yesterday.strftime('%d-%b-%Y')
 
 db = sqlite3.connect("website_subscriber.db")
 cursor = db.cursor()
@@ -35,14 +38,17 @@ with open('positive_affirmations.csv') as csv_file:
 quote_of_the_day = random.choice(data)
 
 # WEATHER_ENDPOINT = 'https://api.openweathermap.org/data/2.5/weather?zip={zip code},{country code}&appid={API key}'
-weather_api_key = '207d9921d71382b6ff73e882a720afc7A'
+weather_api_key = '207d9921d71382b6ff73e882a720afc7'
 
 STOCK_ENDPOINT = "https://www.alphavantage.co/query"
-STOCK_API_KEY = 'DLXPYGB0ZGEL39ROA'
+STOCK_API_KEY = 'DLXPYGB0ZGEL39RO'
+
+NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+NEWS_API_KEY = '7ed5d5211e694996896d8c9b92b3c791'
 
 # Fetching emails
 with MailBox("imap.gmail.com", 993).login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial_folder="INBOX") as mailbox:
-    for msg in mailbox.fetch(f'(SENTSINCE {yesterday})'):
+    for msg in mailbox.fetch(f'(SENTSINCE {yesterday_email})'):
         if "Contact Request from personal website" in msg.subject:
             stock_list = []
             text = msg.text
@@ -74,6 +80,7 @@ with MailBox("imap.gmail.com", 993).login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial
                 print("Duplicate email in the system")
                 pass
 
+# Fetching daily stock info (once per iteration)
 stock_content = {}
                 
 for stock in ['AAPL', 'TSLA', 'AMZN', 'MSFT', 'QQQ']:
@@ -86,6 +93,7 @@ for stock in ['AAPL', 'TSLA', 'AMZN', 'MSFT', 'QQQ']:
     response = requests.get(url=STOCK_ENDPOINT, params = stock_params)
     response.raise_for_status
     stock_data = response.json()
+
     run = 0
     stock_price = []
 
@@ -97,12 +105,34 @@ for stock in ['AAPL', 'TSLA', 'AMZN', 'MSFT', 'QQQ']:
 
     diff = float(stock_price[0]) - float(stock_price[1])
     if diff > 0:
-        stock_content[stock] = f"{stock} up {round((diff/float(stock_price[0]))*100,2)}% \n\n"
+        stock_content[stock] = [f"{stock} up {round((diff/float(stock_price[0]))*100,2)}%. ", f"Yesterday's closing price was ${stock_price[0]}\n"]
     else:
-        stock_content[stock] = f"{stock} down {round((diff/float(stock_price[0]))*100,2)}% \n\n"
+        stock_content[stock] = [f"{stock} down {round((diff/float(stock_price[0]))*100,2)}%. ", f"Yesterday's closing price was ${stock_price[0]}\n"]
 
-print(stock_content)
+# Fetching daily news article
+news_params = {
+    "from": yesterday_news,
+    "apiKey": NEWS_API_KEY,
+    "sortBy": 'popularity',
+    "domains": 'cnn.com',
+    "language": 'en'
+    }
 
+response = requests.get(url=NEWS_ENDPOINT, params = news_params)
+response.raise_for_status
+news_data = response.json()
+
+print(news_data)
+
+news_content = ""
+i = 0
+
+for source in news_data['articles']:
+    news_content += f"{source['title']}: {source['description']}, published at {source['publishedAt']}\nLink: {source['url']}\n\n"
+    i +=1 
+    if i>2: break
+
+# Sending out emails
 with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
     smtp.ehlo() # 연결이 잘 수립되는지 확인 
     smtp.starttls() # 모든 내용이 암호화 되어 전송 
@@ -110,28 +140,42 @@ with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
 
     for subscriber in subscriber_db:
         print(subscriber)
+
+        if subscriber[0] != 'Chunbae':
+            continue
+
         weather_url = f'https://api.openweathermap.org/data/2.5/weather?zip={subscriber[2]},{"US"}&appid={weather_api_key}'
 
         response = requests.get(url=weather_url)
         response.raise_for_status
         weather_data = response.json()
 
-        weather = weather_data['weather'][0]['main'].lower()
+        weather = weather_data['weather'][0]['description'].lower()
         city_name = weather_data['name']
+        max_temp = weather_data['main']['temp_max']
+        min_temp = weather_data['main']['temp_min']
+
+        max_temp = round(1.8*(max_temp-273) + 32,0)
+        min_temp = round(1.8*(min_temp-273) + 32,0)
 
         stock_content_user = ''
 
         stock_list_user = subscriber[3].split(",")
-
-        for stock in stock_list_user:
-            stock_content_user += stock_content[stock]
+        if len(stock_list_user) > 1:
+            stock_content_user += 'Here\'s your stock informaation: \n'
+            for stock in stock_list_user:
+                stock_content_user += stock_content[stock][0]
+                stock_content_user += stock_content[stock][1]
 
         title = 'Your daily reminder from Chunbae'
         content = f"""Hi {subscriber[0]}! 👋
 
-Today's weather in {city_name} is {weather}.
+Today's weather in {city_name} is {weather}. Highest: {max_temp} F. Lowest: {min_temp} F.
 
 Here's a quote of the day: {quote_of_the_day}
+
+Here are top three famous news article from CNN:\n
+{news_content}
 
 {stock_content_user}
 Hope you have an amazing day today! and don't forget, it will all be okay. ❤
